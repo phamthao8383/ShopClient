@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+    @*//add for select*@
+    @Styles.Render("~/Content/bootstrap-select.css")
+    @Scripts.Render("~/Scripts/jquery.min.js")
+    @Scripts.Render("~/Scripts/bootstrap-select.js")
+
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                    @*<li>@Html.ActionLink("Contact", "Contact", "Home")</li>*@
+                    @*<@Html.ActionLink("Contact", "cshtml", "Controller")*@
+                </ul>
+                <button type="button" id="btnShowPopup"
+                        class="btn btn-link navbar-btn navbar-right">Sign in</button>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @* popup login *@
+        <div class="modal fade" tabindex="-1" id="loginPopup"
+             data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            ×
+                        </button>
+                        <h4 class="modal-title">Login</h4>
+                    </div>
+                    <form>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <input class="form-control" type="text"
+                                       placeholder="Username" id="UserName" required />
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control" placeholder="Password"
+                                       type="password" id="Password" required />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" id="btnSign" class="btn btn-primary button button4">Sign</button>
+                            <button type="button" id="btnCancel"
+                                    class="btn btn-danger button button4">
+                                Cancel
+                            </button>
+                            @Html.Hidden("RedirectTo", Url.Action("AddNewItem", "ShopManger"));
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        @* end *@
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+        </footer>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#btnShowPopup").click(function () {
+                $("#loginPopup").modal('show');
+            });
+
+            $("#btnCancel").click(function () {
+                $("#loginPopup").modal('hide');
+            });
+        });
+        //use Ajax check login in Homecontroller
+        jQuery(function ($) {
+            $(btnSign).click(function () {
+                $.ajax({
+                    url:'Home/AjaxCheckLogin',
+                    type: 'POST',
+                    data: { userName: $(UserName).val(), password: $(Password).val() },
+                    success: function (result) {
+                        if (result == 'Login Fail') {
+                            alert(result);
+                        }
+                        else if (result == 'Success') {
+                            var url = $("#RedirectTo").val();
+                            location.href = url;
+                        }
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

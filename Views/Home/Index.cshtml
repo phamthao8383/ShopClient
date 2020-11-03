@@ -1,0 +1,99 @@
+﻿@using ShopClient_MVC.Models
+@{
+    ViewBag.Title = "Home Page";
+}
+@model IEnumerable<Item>
+
+@Styles.Render("~/Css/Home.css")
+<!-- Page Content -->
+<br />
+<hr />
+<div class="container">
+    <div class="row">
+
+        <div class="col-lg-3">
+
+            <h1 class="my-4">Shop Name</h1>
+            <div class="list-group">
+                <a href="#" class="list-group-item">Phân loại 1</a>
+                <a href="#" class="list-group-item">Phân loại 2</a>
+                <a href="#" class="list-group-item">Phân loại 3</a>
+            </div>
+
+        </div>
+        <!-- /.col-lg-3 -->
+
+        <div class="col-lg-9">
+            <div class="row">
+                @{
+                    foreach (var item in Model)
+                    {
+                        string sale = "₫" + item.Price.ToString();
+                        if (item.Price == 0)
+                        {
+                            sale = "<Strong>LIÊN HỆ</strong>";
+                        }
+                        else
+                        if (item.Discount > 0)
+                        {
+                            var realSale = item.Price - item.Price * item.Discount / 100;
+                            sale = $"<span>₫<strong>{realSale.ToString()}</strong> <s style='color:red'>{item.Price.ToString()}</s></span>";
+                        }
+
+                        <div class="col-sm-6 col-md-4">
+                            <div class="thumbnail">
+                                @{
+                                    if (item.ImagePath != null)
+                                    {
+                                        var base64 = Convert.ToBase64String((item.ImagePath));
+                                        var imgsrc = string.Format("data:image/jpg;base64,{0}", base64);
+                                        <img src='@imgsrc' alt="NO IMAGE" class="imageThumbnails">
+                                    }
+                                    else
+                                    {
+                                        <img src='' class="imageThumbnails" alt="NO IMAGE">
+                                    }
+                                }
+                                <div class="caption">
+                                    <div class="caption">
+                                        @{
+                                            IDictionary<string, object> routeValues = new Dictionary<string, object>();
+                                            routeValues.Add("Item", item.ID);
+
+                                            <h4>@Html.ActionLink(item.Name, "Index", "Detail", new RouteValueDictionary(routeValues), null)</h4>
+
+                                            <h5>@(new HtmlString(sale))</h5>
+
+                                            //    min-height:130px; max-height:130px; overflow:hidden;
+                                            //get 100 letter to show
+                                            if (!string.IsNullOrWhiteSpace(item.Description))
+                                            {
+                                                int strLength = item.Description.Trim().Length;
+                                                strLength = strLength < 100 ? strLength : 100;
+
+                                                var descript = item.Description.Trim().Substring(0, strLength);
+                                                descript = descript + "...";
+                                                <p class="descriptionThumbnails">@descript</p>
+                                            }
+                                            else
+                                            {
+                                                <p class="descriptionThumbnails">...</p>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+
+            </div>
+            <!-- /.row -->
+
+        </div>
+        <!-- /.col-lg-9 -->
+
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->

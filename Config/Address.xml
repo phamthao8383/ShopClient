@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<sqlMap namespace="ShopClient_MVC" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<alias>
+		<typeAlias alias="Province" type="ShopClient_MVC.Models.Province, ShopClient_MVC"/>
+		<typeAlias alias="District" type="ShopClient_MVC.Models.District, ShopClient_MVC"/>
+		<typeAlias alias="Commune" type="ShopClient_MVC.Models.Commune, ShopClient_MVC"/>
+	</alias>
+	<resultMaps>
+		<resultMap id="ProvinceEntity" class="Province">
+			<result property="ID" column="ID" />
+			<result property="Name" column="Name" />
+		</resultMap>
+
+		<resultMap id="DistrictEntity" class="District">
+			<result property="ID" column="ID" />
+			<result property="IDProvince" column="ID_PROVINCE" />
+			<result property="Name" column="Name" />
+		</resultMap>
+
+		<resultMap id="CommuneEntity" class="Commune">
+			<result property="ID" column="ID" />
+			<result property="IDDistrict" column="ID_DISTRICT" />
+			<result property="Name" column="Name" />
+		</resultMap>
+	</resultMaps>
+
+	<statements>
+		<statement id="GetAllProvinceEntity" resultMap="ProvinceEntity">
+			SELECT  *
+			FROM TB_PROVINCE
+			ORDER BY Name ASC
+		</statement>
+
+		<statement id="FindDistrictEntity" resultMap="DistrictEntity">
+			SELECT *
+			FROM TB_DISTRICT
+			<dynamic prepend=" WHERE">
+				<isNotEmpty property="IDProvince">
+					ID_PROVINCE = #IDProvince#
+				</isNotEmpty>
+			</dynamic>
+		</statement>
+
+		<statement id="FindCommuneEntity" resultMap="CommuneEntity">
+			SELECT *
+			FROM TB_COMMUNE
+			<dynamic prepend=" WHERE">
+				<isNotEmpty property="IDDistrict">
+					ID_DISTRICT = #IDDistrict#
+				</isNotEmpty>
+			</dynamic>
+		</statement>
+		
+	</statements>
+</sqlMap>

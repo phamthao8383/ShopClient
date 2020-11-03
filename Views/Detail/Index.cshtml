@@ -1,0 +1,166 @@
+﻿@using System.Web.UI.WebControls
+@using ShopClient_MVC.Models;
+@model Item
+
+@{
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Styles.Render("~/Css/Detail.css")
+
+@{
+    var item = Model;
+    ViewBag.Title = item.Name;
+}
+@{
+    string sale = "₫" + item.Price.ToString();
+    if (item.Price == 0)
+    {
+        sale = "<Strong>LIÊN HỆ</strong>";
+    }
+    else
+    if (item.Discount > 0)
+    {
+        var realSale = item.Price - item.Price * item.Discount / 100;
+        sale = $"<span>₫ <strong>{realSale.ToString()}</strong> <s style='color:red'>{item.Price.ToString()}</s></span>";
+    }
+}
+
+<!-- Page Content -->
+<div class="container">
+    <!-- Portfolio Item Row -->
+
+    <div class="row">
+        @{
+            if (item.ID <= 0)
+            {
+                <script>
+                    document.write("<h1>404:</h1><br/><p>không tìm thấy</p>");
+                </script>
+            }
+            else
+            {
+                <div class="col-md-8" style="padding-top:2rem">
+                    @{
+                        if (item != null)
+                        {
+                            if (item.ImagePath != null)
+                            {
+                                var base64 = Convert.ToBase64String((item.ImagePath));
+                                var imgsrc = string.Format("data:image/jpg;base64,{0}", base64);
+                                <img src='@imgsrc' style="max-width:500px;max-height:500px" alt="NO IMAGE" class="center-block">
+                            }
+                            else
+                            {
+                                <img src='' style="max-width:500px;max-height:500px" alt="NO IMAGE" class="center-block">
+                            }
+                        }
+                    }
+                </div>
+
+                <div class="col-md-4">
+                    <h3 class="my-3">@item.Brand @item.Name</h3>
+                    <br />
+                    @item.Description
+                    <br />
+                    <hr />
+                    <div>
+                        <div style="text-align:center;">
+                            <label style="padding-right:1rem">Số lượng </label>
+                            <button id="btBuyAmoutDown" onclick="btBuyAmoutDown_Click(); return false;">-</button>
+                            <input id="txtBuyAmount" type="text" value="1" style="text-align:center; width:20%;" disabled />
+                            <button id="btBuyAmoutUp" onclick="btBuyAmoutUp_Click(); return false;">+</button>
+                            <label style="padding-left:1rem">Còn lại @item.AvailbleAmount</label>
+                        </div>
+                        <br />
+                        <div class="areaPrice">
+                            <input id="hdPrice" type="hidden" value="@sale" />
+                            <label id="lbPrice" class="center-block">
+                                @(new HtmlString(sale))
+                            </label>
+                        </div>
+                        @using (Html.BeginForm("OrderItem", "Customer", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                        {
+                            @Html.Hidden("hdBuyAmount", 1)
+                            @Html.HiddenFor(model => model.ID)
+                            <div style="padding-top:1rem">
+
+                                @{
+                                    if (item.AvailbleAmount <= 0)
+                                    {
+                                        <input type="submit" id="btBuyNow" value="ĐẶT  MUA" class="center-block" style="width:80%" disabled="disabled">
+                                    }
+                                    else
+                                    {
+                                        <input type="submit" id="btBuyNow" value="ĐẶT  MUA" class="center-block" style="width:80%">
+                                    }
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <hr />
+    <!-- /.row -->
+    <!-- Related Projects Row -->
+    <h3 class="my-4">Related Projects</h3>
+
+    <div class="row">
+
+        <div class="col-md-3 col-sm-6 mb-4">
+            <a href="#">
+                <img class="img-fluid" src="http://placehold.it/100x100" alt="">
+            </a>
+        </div>
+
+        <div class="col-md-3 col-sm-6 mb-4">
+            <a href="#">
+                <img class="img-fluid" src="http://placehold.it/100x100" alt="">
+            </a>
+        </div>
+
+        <div class="col-md-3 col-sm-6 mb-4">
+            <a href="#">
+                <img class="img-fluid" src="http://placehold.it/100x100" alt="">
+            </a>
+        </div>
+
+        <div class="col-md-3 col-sm-6 mb-4">
+            <a href="#">
+                <img class="img-fluid" src="http://placehold.it/100x100" alt="">
+            </a>
+        </div>
+
+    </div>
+    <!-- /.row -->
+
+</div>
+
+<!-- /.container -->
+
+<script>
+    function btBuyAmoutDown_Click() {
+        var count = $(txtBuyAmount).val();
+        if (count > 1) {
+            count--;
+        }
+        $(txtBuyAmount).val(count);
+        $(hdBuyAmount).val(count);
+    }
+
+    function btBuyAmoutUp_Click() {
+        var count = parseInt($(txtBuyAmount).val());
+        if (count < @item.AvailbleAmount) {
+            count++;
+        }
+        $(txtBuyAmount).val(count);
+        $(hdBuyAmount).val(count);
+    }
+
+    //window.onload = function () {
+    //    document.getElementById('lbPrice').innerHTML = $(hdPrice).val();
+    //}
+</script>

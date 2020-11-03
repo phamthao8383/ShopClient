@@ -1,0 +1,214 @@
+﻿@using ShopClient_MVC.Models;
+@using ShopClient_MVC.Controllers;
+@model OrderInfo
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    IEnumerable<SelectListItem> ProvinceList = ViewBag.ProvinceList;
+    Item item = ViewData["item"] as Item;
+    int? buyAmount = ViewData["Amount"] as int?;
+    if (buyAmount == null)
+    {
+        buyAmount = 1;
+    }
+
+    var realPrice = item.Price - item.Price * item.Discount / 100;
+    long realSale = (long)realPrice * buyAmount.Value;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-3">
+            <div class="card card-signin flex-row my-5">
+                <div class="card-body">
+                    @using (Html.BeginForm())
+                    {
+                        <div>
+                            <h3 class="my-3">@item.Brand @item.Name</h3>
+                            @{
+                                if (item != null)
+                                {
+                                    if (item.ImagePath != null)
+                                    {
+                                        //convert binary to Image
+                                        var base64 = Convert.ToBase64String((item.ImagePath));
+                                        var imgsrc = string.Format("data:image/jpg;base64,{0}", base64);
+                                        <img src='@imgsrc' style="max-width:200px;max-height:150px" alt="NO IMAGE">
+                                    }
+                                }
+                            }
+                            <div style="padding-top:2rem">
+                                <span class="center-block">
+                                    <label>Số lượng </label>
+                                    <button id="btBuyAmoutDown" onclick="btBuyAmoutDown_Click(); return false;"> - </button>
+                                    @Html.TextBox("txtBuyAmount", buyAmount.Value, new {@style="text-align:center; width:15%;", disabled=true})
+                                    <button id="btBuyAmoutUp" onclick="btBuyAmoutUp_Click(); return false;"> + </button>
+                                    <label>Còn lại @item.AvailbleAmount</label>
+                                </span>
+                                <br/>
+                                <span style="padding-top:1rem">
+                                    <label>Thành tiền </label>
+                                    @Html.TextBox("txtTotalPrice",realSale, new { @class="btn btn-default", style= "text-align:center; width:50%; font-weight:bold; color:green;", disabled=true})
+                                </span>
+                            </div>
+                        </div>
+
+                        <hr/>    
+                        <div>
+                            <span>
+                                @Html.RadioButton("rdbtGender", "Male", new { @checked = true })&ensp;<label> Anh</label>
+                                &emsp;&emsp;
+                                @Html.RadioButton("rdbtGender", "Female")&ensp;<label> Chị</label>
+                            </span>
+                        </div>
+                        <div class="form-label-group" style="padding-top:1rem">
+                            <label for="txtcustommerName">Họ và Tên</label>
+                            @Html.TextBox("txtcustommerName", null,
+                                new{
+                                    @class = "form-control",
+                                    placeholder = "Họ và Tên",
+                                    required = "",
+                                    autofocus = ""
+                                })
+                        </div>
+
+                        <div class="form-label-group" style="padding-top:1rem">
+                            <label for="txtTel">Số điện thoại</label>
+                            @*please add tel number validate for this txtbox*@
+                            @Html.TextBox("txtPhoneNumber",null,
+                            new {
+                                @class = "form-control",
+                                    placeholder = "số điện thoại",
+                                    type = "tel",
+                                    required = true
+                                })
+                           
+                        </div>
+                        <div class="form-label-group" style="padding-top:1rem">
+                            <label for="ddlProvince">Tỉnh/Thành phố</label>
+                            <br />
+
+                            @Html.DropDownList("ddlProvince", ProvinceList,
+                                new
+                                {
+                                    @class = "selectpicker",
+                                    data_show_subtext = "true", //enable search in select
+                                    data_live_search = "true", //enable search in select
+                                    required = true
+                                })
+
+                        </div>
+                        <div class="form-label-group" style="padding-top:1rem">
+                            <label for="ddlDistrict">Quận/Huyện</label>
+                            <br />
+                            @Html.DropDownList("ddlDistrict", new SelectList(string.Empty, "Value", "Text"), "Chọn Quận/Huyện"
+                                    , new
+                                    {
+                                        @class = "selectpicker",
+                                        data_show_subtext = "true", //enable search in select
+                                        data_live_search = "true",  //enable search in select
+                                        required = "",
+                                        placeholder = "Chọn Quận/Huyện"
+                                    })
+                        </div>
+                        <div class="form-label-group" style="padding-top:1rem">
+                            <label for="ddlCommune">Xã/Phường</label>
+                            <br />
+                            @Html.DropDownList("ddlCommune", new SelectList(string.Empty, "Value", "Text"), "Chọn Phường/Xã"
+                            , new
+                            {
+                                @class = "selectpicker",
+                                data_show_subtext = "true", //enable search in select
+                                data_live_search = "true",  //enable search in select
+                                required = "true",
+                                placeholder = "Chọn Xã/Phường"
+                            })
+                        </div>
+                        <br>
+                        //Textbox is disable can't collect  value, so use hidden field to cover
+                        @Html.Hidden("for_itemID",item.ID)
+                        @Html.Hidden("for_txtBuyAmount", buyAmount.Value)
+                        @Html.Hidden("for_txtTotalPrice", realSale)
+                        <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit" style="width:70%">ORDER ĐÊ</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function btBuyAmoutDown_Click() {
+        var count = $(txtBuyAmount).val();
+        if (count > 1) {
+            count--;
+        }
+        $(txtBuyAmount).val(count);
+         $(txtTotalPrice).val(@realPrice * count);
+    }
+
+    function btBuyAmoutUp_Click() {
+        var count = parseInt($(txtBuyAmount).val());
+        if (count < @item.AvailbleAmount) {
+            count++;
+        }
+        $(txtBuyAmount).val(count);
+        $(for_txtBuyAmount).val(count);
+        $(txtTotalPrice).val(@realPrice * count);
+        $(for_txtTotalPrice).val(@realPrice * count);
+
+    }
+
+    jQuery(function ($) {
+        // Hàm Ajax Lấy District
+        $("#ddlProvince").change(function () {
+            $('#ddlDistrict').empty();
+            $.ajax({
+                url: '/Customer/AjaxGetDistrictByProvice',
+                type: 'POST',
+                dataType: 'JSON',
+                data: { provinceID: $('#ddlProvince').val() },
+                success: function (district) {
+                    //alert(JSON.stringify(district))
+                    $("#ddlDistrict").append('<option value="" disabled selected>' + 'Chọn Quận/Huyện' + '</option>');
+                    $.each(district, function (i, district) {
+                        $("#ddlDistrict").append('<option value="' + district.Value + '">' + district.Text + '</option>');
+                    });
+                    $('#ddlDistrict').selectpicker('refresh');
+                }
+            });
+            //reset ddlCommune
+            $('#ddlCommune').empty();
+            $("#ddlCommune").append('<option value="" disabled selected>' + 'Chọn Phường/Xã' + '</option>');
+            $('#ddlCommune').selectpicker('refresh');
+
+            return false;
+        });
+
+        // Hàm Ajax Lấy Commune
+        $("#ddlDistrict").change(function () {
+            $('#ddlCommune').empty()
+            $.ajax({
+                url: '/Customer/AjaxGetCommuneByDistrict',
+                type: 'POST',
+                dataType: 'JSON',
+                data: { districtID: $('#ddlDistrict').val() },
+                success: function (commune) {
+                    //alert(JSON.stringify(commune))
+                    $("#ddlCommune").append('<option value="" disabled selected>' + 'Chọn Phường/Xã' + '</option>');
+                    $.each(commune, function (i, commune) {
+                        $("#ddlCommune").append('<option value="' + commune.Value + '">' + commune.Text + '</option>');
+                    });
+                    $('#ddlCommune').selectpicker('refresh');
+                },
+                error: function (ex) {
+                    alert('Failed to retrieve Commune.' + JSON.stringify(ex));
+                }
+            });
+            return false;
+        });
+    });
+</script>

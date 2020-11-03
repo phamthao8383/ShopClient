@@ -1,0 +1,128 @@
+﻿@using ShopClient_MVC.Models
+@model ItemUpload
+@{
+    ViewBag.Title = "AddNewItem";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="container">
+    <br />
+    @using (Html.BeginForm("UploadFiles", "ShopManger", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="form-horizontal">
+
+            <div class="form-group">
+                <label for="Name" class="control-label col-md-2">Tên sản phẩm</label>
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.ItemFlow.Name,
+                    new
+                    {
+                        @class = "form-control",
+                        placeholder = "tên sản phẩm",
+                        required = "",
+                        autofocus = ""
+                    })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="Price" class="control-label col-md-2">Giá Sản Phẩm</label>
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.ItemFlow.Price,
+                    new
+                    {
+                        @class = "form-control",
+                    })
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="Discount" class="control-label col-md-2">Giảm giá (%)</label>
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.ItemFlow.Discount,
+                    new
+                    {
+                        @class = "form-control",
+                    })
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="AvailbleAmount" class="control-label col-md-2">Số lượng hiện có</label>
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.ItemFlow.AvailbleAmount,
+                    new
+                    {
+                        @class = "form-control",
+                    })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="Description" class="control-label col-md-2">Mô tả về sản phẩm</label>
+                <div class="col-md-10">
+                    @Html.TextAreaFor(model => model.ItemFlow.Description,
+                    new
+                    {
+                        @class = "form-control",
+                    })
+                </div>
+            </div>
+
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @*@Html.LabelFor(model => model.File, htmlAttributes: new { @class = "control-label col-md-2" })*@
+                <label for="Name" class="control-label col-md-2">Hình ảnh sản phẩm</label>
+                <div class="col-md-10">
+
+                    @Html.EditorFor(model => model.File, new { htmlAttributes = new { @class = "form-control", @type = "file", onchange = "show(this)" } })
+                    @Html.ValidationMessageFor(model => model.File, "", new { @class = "text-danger" })
+                </div>
+
+
+
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2">&nbsp;</label>
+                <div class="col-md-10">
+                    <img id="InputImge" height="100" width="100" style="border:thin" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Thêm mới" class="btn btn-primary" />
+                </div>
+            </div>
+            <hr />
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10 text-success">
+                    <label id="lbInform">
+                        @(new HtmlString(ViewBag.AddItemStatus))
+                    </label>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<script>
+    function show(input) {
+        if (input.files && input.files[0]) {
+            var filerdr = new FileReader();
+            filerdr.onload = function (e) {
+                $('#InputImge').attr('src', e.target.result);
+            }
+            filerdr.readAsDataURL(input.files[0]);
+        }
+    }
+
+    //window.onload = function () {
+    //    if ($('#lbInform').length > 0 && $('#hdInform').length > 0)
+    //        //$('#lbInform')
+    //    document.getElementById('lbInform').innerHTML = $('#hdInform').val();
+    //}
+</script>
+

@@ -1,0 +1,11 @@
+﻿.imageThumbnails {
+    min-width: 200px;
+    min-height: 200px;
+    max-height:200px
+}
+.descriptionThumbnails {
+    word-break: break-all;
+    overflow: hidden;
+    min-height: 80px;
+    max-height: 80px;
+}

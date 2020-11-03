@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<sqlMap namespace="ShopClient_MVC" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<alias>
+		<typeAlias alias="Item" type="ShopClient_MVC.Models.Item, ShopClient_MVC"/>
+	</alias>
+	<resultMaps>
+		<resultMap id="ItemEntity" class="Item">
+			<result property="ID" column="ID" />
+			<result property="Name" column="Name" />
+			<result property="Type" column="Type" />
+			<result property="Brand" column="Brand" />
+			<result property="AvailbleAmount" column="AvailbleAmount" />
+			<result property="SaleAmount" column="SaleAmount" />
+			<result property="Price" column="Price" />
+			<result property="Discount" column="Discount" />
+			<result property="Description" column="Description" />
+			<result property="ImagePath" column="ImagePath" />
+		</resultMap>
+	</resultMaps>
+
+	<statements>
+		<statement id="GetAllItemEntity" resultMap="ItemEntity">
+			SELECT  *
+			FROM TB_ITEM_INFO
+		</statement>
+
+    <statement id="AddNewItemEntity" parameterClass="Item">
+      INSERT INTO TB_ITEM_INFO
+      (
+      Name,
+      Type,
+      Brand,
+      AvailbleAmount,
+      SaleAmount,
+      Price,
+      Discount,
+      <isNotEmpty property="ImagePath">
+        <!--to fix ImagePatth is null-->
+        ImagePath,
+      </isNotEmpty>
+      Description
+      )
+      VALUES
+      (
+      #Name#,
+      #Type#,
+      #Brand#,
+      #AvailbleAmount#,
+      #SaleAmount#,
+      #Price#,
+      #Discount#,
+      <isNotEmpty property="ImagePath">
+        <!--to fix ImagePatth is null-->
+        #ImagePath#,
+      </isNotEmpty>
+      #Description#
+      )
+    </statement>
+  </statements>
+</sqlMap>

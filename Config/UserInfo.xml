@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<sqlMap namespace="ShopClient_MVC" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<alias>
+		<typeAlias alias="User" type="ShopClient_MVC.Models.User, ShopClient_MVC"/>
+	</alias>
+	<resultMaps>
+		<resultMap id="User" class="User">
+			<result property="UserName" column="Username" />
+			<result property="Password" column="Password" />
+			<result property="Email" column="Phone" />
+			<result property="Phone" column="Email" />
+			<result property="DEL_FLG" column="DEL_FLG" />
+		</resultMap>
+	</resultMaps>
+	<statements>
+		<statement id="FindUserEntity" resultMap="User">
+			SELECT TOP (1) *
+			FROM TB_USER_INFO
+			where Username = #USER_NAME#
+			and Password = #PASSWORD#
+			and DEL_FLG = 0
+		</statement>
+
+		<!--<statement id="UpdateUserEntity" parameterClass="User">
+			UPDATE TB_USER_INFO
+			<dynamic prepend="SET">
+				Usename = #Username#,
+				Password = #Password#,
+				Email = #Email#
+				Phone = #Phone#
+				Avatar = #Avatar#
+				Allowed = #Allowed#
+			</dynamic>
+			WHERE PhoneNumber = #PhoneNumber#
+		</statement>-->
+
+		<!--<statement id="AddNewUserEntity" parameterClass="User">
+			INSERT INTO TB_USER_INFO
+			(
+			Username,
+			Password,
+			Email,
+			Phone,
+			Avatar,
+			Allowed
+			)
+			VALUES
+			(
+			#Username#,
+			#Password#,
+			#Email#,
+			#Phone#,
+			#Avatar#,
+			#Allowed#
+
+			)
+		</statement>-->
+	</statements>
+</sqlMap>

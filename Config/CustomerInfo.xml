@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<sqlMap namespace="ShopClient_MVC" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<alias>
+		<typeAlias alias="Customer" type="ShopClient_MVC.Models.Customer, ShopClient_MVC"/>
+	</alias>
+	<resultMaps>
+		<resultMap id="Customer" class="Customer">
+			<result property="ID" column="ID" />
+			<result property="Name" column="Name" />
+			<result property="PhoneNumber" column="PhoneNumber" />
+			<result property="Gender" column="Gender" />
+			<result property="Address" column="Address" />
+		</resultMap>
+	</resultMaps>
+
+	<statements>
+		<statement id="FindCustomerEntity" resultMap="Customer">
+			SELECT  *
+			FROM TB_CUSTOMER_INFO
+			<dynamic prepend=" WHERE">
+				<isNotEmpty property="phoneNO">
+					PhoneNumber=#phoneNO#
+				</isNotEmpty>
+			</dynamic>
+		</statement>
+		
+		<statement id="UpdateCustomerEntity" parameterClass="Customer">
+			UPDATE TB_CUSTOMER_INFO
+			<dynamic prepend="SET">
+				Name = #Name#,
+				Gender = #Gender#,
+				Address = #Address#
+			</dynamic>
+			WHERE PhoneNumber = #PhoneNumber#
+		</statement>
+
+		<statement id="AddNewCustomerEntity" parameterClass="Customer">
+			INSERT INTO TB_CUSTOMER_INFO
+			(
+				Name,
+				PhoneNumber,
+				Gender,
+				Address
+			)
+			VALUES
+			(
+				#Name#,
+				#PhoneNumber#,
+				#Gender#,
+				#Address#
+			)
+		</statement>
+	</statements>
+</sqlMap>
